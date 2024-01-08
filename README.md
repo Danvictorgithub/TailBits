@@ -1,2 +1,2 @@
-# TailWind-Generator
-OpenAI API tailwind generator project with Next/NestJS
+# Tail Compo
+Open-sourced Tailwind components with Tailwind Generator powered by Open AI GPT 3.5 with Next and NestJS(Express)
