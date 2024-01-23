@@ -19,7 +19,7 @@ frontend/.next/
 frontend/out/
 frontend/build
 frontend/.DS_Store
-frontend/*.pem
+frontend/*.pem  
 frontend/npm-debug.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
