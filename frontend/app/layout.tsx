@@ -5,8 +5,11 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "TailBits",
+  title: "tailchro",
   description: "Open-Source Tailwind Components",
+  icons: {
+    icon: "/tailchro.png",
+  },
 };
 
 export default function RootLayout({
@@ -16,6 +19,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/tailchro.png" />
+      </head>
       <body className={inter.className}>{children}</body>
     </html>
   );
