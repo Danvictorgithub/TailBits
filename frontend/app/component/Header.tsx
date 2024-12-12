@@ -9,7 +9,7 @@ export default function Header() {
         <div className="flex gap-4 items-center">
           <Link href="/" className="flex items-center gap-2">
             <Image src="/tailchro.png" width={50} height={50} alt="" />
-            <p className="font-bold text-lg text-cyan-600">tailchro</p>
+            <p className="font-bold text-lg text-cyan-600">TailChro</p>
           </Link>
           <div className="flex gap-4">
             <p>Categories</p>
