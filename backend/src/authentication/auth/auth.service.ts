@@ -1,7 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { User } from '@prisma/client';
 
-import * as bcrypt from "bcrypt";
+// import * as bcrypt from "bcrypt";
+import * as argon2 from "argon2";
 import { PrismaService } from 'src/db/prisma/prisma.service';
 
 @Injectable()
@@ -13,21 +15,26 @@ export class AuthService {
     // Authenticates email and Password
     async validateUser(email: string, password: string): Promise<any> {
         const user = await this.prisma.user.findUnique({ where: { email } });
-        const result = (user) ? bcrypt.compareSync(password, user.password) : false;
-        if (user && result) {
-            if (user.isVerified) {
-                const { password, ...result } = user;
-                return result;
-            }
-            else {
-                throw new UnauthorizedException("Please verify your email address");
-            }
+        if (!user) {
+            throw new UnauthorizedException('Invalid email or password');
         }
-        throw new UnauthorizedException("Invalid email or password");
+
+        const result = await argon2.verify(user.password, password);
+        if (!result) {
+            throw new UnauthorizedException('Invalid email or password');
+        }
+
+        // if (!user.emailVerified) {
+        //     throw new UnauthorizedException('Please verify your email address');
+        // }
+
+        const { password: userPassword, ...userWithoutPassword } = user;
+        return userWithoutPassword;
     }
     // Returns JWT Bearer Token
-    async login(user: any) {
-        const payload = user;
+    async login(user: User) {
+        const { createdAt, password, updatedAt, username, emailVerified, ...payloadObj } = user;
+        const payload = payloadObj;
         return {
             // Calls Passport JWTStrategy
             access_token: this.jwtService.sign(payload)

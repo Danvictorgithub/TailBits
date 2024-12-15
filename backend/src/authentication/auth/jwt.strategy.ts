@@ -16,8 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         const updatedUser = await this.prisma.user.findUnique({
             where: { id: payload.id },
         })
-        const profile = await this.prisma.profile.findUnique({ where: { userId: payload.id } });
-        const { password, ...userInfo } = { ...updatedUser, profile };
+        const { password, createdAt, updatedAt, ...userInfo } = { ...updatedUser };
         return userInfo;
     }
 }
