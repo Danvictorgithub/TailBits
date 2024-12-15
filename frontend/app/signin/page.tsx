@@ -94,7 +94,7 @@ export default function signin() {
                 />
               </svg>
 
-              <span className="mx-2">Sign in with Google</span>
+              <span className="mx-2">Continue with Google</span>
             </a>
 
             <div className="mt-6 text-center ">
