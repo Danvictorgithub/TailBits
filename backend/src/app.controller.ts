@@ -6,15 +6,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class AppController {
   constructor(private readonly appService: AppService) { }
 
-
   @Get()
   getHello() {
     return this.appService.getHello();
   }
-
-  // @UseInterceptors(FileInterceptor('file'))
-  // @Post()
-  // upload(@UploadedFile() file: Express.MulterS3.File) {
-  //   return this.appService.upload(file);
-  // }
 }

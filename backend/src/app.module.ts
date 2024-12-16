@@ -11,8 +11,7 @@ import * as multerS3 from "multer-s3"
 
 @Module({
   imports: [UsersModule, AuthModule, ProfilesModule,
-    MulterConfigModuleModule,
-  ],
+    MulterConfigModuleModule],
   controllers: [AppController],
   providers: [AppService],
 })
