@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, ParseFilePipe, FileTypeValidator, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFile, ParseFilePipe, FileTypeValidator, ValidationPipe, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { DevelopmentGuard } from 'src/guards/development/development.guard';
 
 @Controller('users')
 export class UsersController {
@@ -22,11 +23,12 @@ export class UsersController {
         validators: [
           new FileTypeValidator({ fileType: 'image/*' })]
       }))
-    file: Express.Multer.File,
+    file: Express.MulterS3.File,
   ) {
     return this.usersService.create(createUserDto, file);
   }
 
+  @UseGuards(DevelopmentGuard)
   @Get()
   findAll() {
     return this.usersService.findAll();
@@ -34,7 +36,7 @@ export class UsersController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+    return this.usersService.findOne(id);
   }
 
   @Patch(':id')
@@ -42,8 +44,9 @@ export class UsersController {
     return this.usersService.update(+id, updateUserDto);
   }
 
+  @UseGuards(DevelopmentGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+    return this.usersService.remove(id);
   }
 }

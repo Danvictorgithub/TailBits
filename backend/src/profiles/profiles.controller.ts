@@ -5,6 +5,8 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtAuthGuard } from 'src/authentication/auth/jwt.auth.guard';
 import { RequestUser } from 'src/interfaces/requestUser';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { DevelopmentGuard } from 'src/guards/development/development.guard';
+import { ProfileOwnerGuard } from 'src/guards/profile-owner/profile-owner.guard';
 
 @Controller('profiles')
 export class ProfilesController {
@@ -26,11 +28,12 @@ export class ProfilesController {
         validators: [
           new FileTypeValidator({ fileType: 'image/*' })]
       }))
-    file: Express.Multer.File,
+    file: Express.MulterS3.File,
     @Request() req: RequestUser) {
     return this.profilesService.create(createProfileDto, file, req.user);
   }
 
+  @UseGuards(DevelopmentGuard)
   @Get()
   findAll() {
     return this.profilesService.findAll();
@@ -38,16 +41,34 @@ export class ProfilesController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.profilesService.findOne(+id);
+    return this.profilesService.findOne(id);
   }
 
+  @UseGuards(JwtAuthGuard, ProfileOwnerGuard)
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProfileDto: UpdateProfileDto) {
-    return this.profilesService.update(+id, updateProfileDto);
+  update(
+    @Param('id') id: string,
+    @Body(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        skipUndefinedProperties: true
+      })) updateProfileDto: UpdateProfileDto,
+    @UploadedFile(
+      new ParseFilePipe({
+        fileIsRequired: false,
+        validators: [
+          new FileTypeValidator({ fileType: 'image/*' })]
+      }))
+    file: Express.Multer.File,
+    @Request() req: RequestUser
+  ) {
+    return this.profilesService.update(id, updateProfileDto, file, req.user);
   }
 
+  @UseGuards(DevelopmentGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.profilesService.remove(+id);
+    return this.profilesService.remove(id);
   }
 }

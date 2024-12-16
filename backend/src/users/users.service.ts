@@ -9,7 +9,7 @@ import { ProfilesService } from 'src/profiles/profiles.service';
 @Injectable()
 export class UsersService {
   constructor(private db: PrismaService, private profilesService: ProfilesService) { }
-  async create(createUserDto: CreateUserDto, file: Express.Multer.File) {
+  async create(createUserDto: CreateUserDto, file: Express.MulterS3.File) {
     const emailUnique = await this.db.user.findUnique({ where: { email: createUserDto.email } });
     if (emailUnique) {
       throw new BadRequestException("Email Address already exists");
@@ -25,19 +25,28 @@ export class UsersService {
     return newUser;
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    return this.db.user.findMany({ select: { id: true, email: true, emailVerified: true, createdAt: true, updatedAt: true, username: true } })
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    const user = await this.db.user.findUnique({ where: { id } });
+    if (!user) {
+      throw new BadRequestException("User not found");
+    }
+    return user;
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    const user = await this.db.user.findUnique({ where: { id } });
+    if (!user) {
+      throw new BadRequestException("User not found");
+    }
+    await this.db.user.delete({ where: { id } });
+    return user;
   }
 }

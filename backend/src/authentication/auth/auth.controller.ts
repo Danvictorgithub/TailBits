@@ -14,16 +14,18 @@ export class AuthController {
     login(@Request() req): any {
         return this.authService.login(req.user);
     }
-    @UseInterceptors(FileInterceptor('file'))
+
     @Post('signup')
+    @UseInterceptors(FileInterceptor('file'))
     signup(@Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) createUserDto: CreateUserDto,
         @UploadedFile(
             new ParseFilePipe({
                 fileIsRequired: false,
                 validators: [
                     new FileTypeValidator({ fileType: 'image/*' })]
-            }))
-        file: Express.Multer.File,) {
+            })
+        )
+        file: Express.MulterS3.File,) {
         return this.usersService.create(createUserDto, file);
     }
 

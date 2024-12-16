@@ -8,17 +8,18 @@ import { RequestUser } from 'src/interfaces/requestUser';
 export class ProfileOwnerGuard implements CanActivate {
   constructor(private db: PrismaService) { }
 
-  async checkProfile(user: User) {
-    const profile = await this.db.profile.findFirst({ where: { userId: user.id } });
+  async checkProfile(user: User, id: string) {
+    const profile = await this.db.profile.findFirst({ where: { userId: id } });
     if (!profile) {
       throw new BadRequestException("Profile not found");
     }
-    return true;
+    return profile.id == user.id;
   }
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const request: RequestUser = context.switchToHttp().getRequest();
-    return this.checkProfile(request.user);
+    const request = context.switchToHttp().getRequest();
+    const profileId = request.params.id
+    return this.checkProfile(request.user, profileId);
   }
 }
